@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080e1b">
+<title>TRADYX | AI Trading</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080e1b;color:#edf3ff;font-family:Arial,sans-serif}
+header{padding:20px;border-bottom:1px solid #1d2a40;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:25px;font-weight:900;letter-spacing:2px;color:#37c8ff}
+.status{font-size:11px;color:#43dba0}
+main{padding:16px;max-width:850px;margin:auto}
+h2{font-size:19px;margin:20px 0 12px}
+.card{background:#111c2e;border:1px solid #23334c;border-radius:14px;padding:16px;margin-bottom:13px}
+.muted{color:#8fa3bd;font-size:12px}
+.big{font-size:30px;font-weight:bold;margin:10px 0}
+.green{color:#42dca0}
+.red{color:#ff667c}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.market{display:flex;justify-content:space-between;gap:8px;align-items:center}
+button,select{background:#1b2d47;color:white;border:1px solid #344b69;border-radius:9px;padding:11px;cursor:pointer}
+button.active{background:#087eb7;border-color:#22bafa}
+.actions{display:flex;gap:10px;margin-top:14px}
+.actions button{flex:1}
+canvas{width:100%;height:190px}
+.row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #26364d;font-size:13px}
+footer{text-align:center;color:#7589a4;font-size:11px;padding:25px}
+.signal{font-weight:bold;color:#42dca0}
+</style>
+</head>
+<body>
+<header>
+ <div class="logo">TRADYX</div>
+ <div class="status">● SISTEMA DEMO ACTIVO</div>
+</header>
+
+<main>
+ <h2>Panel de inteligencia financiera</h2>
+
+ <div class="card">
+  <div class="muted">CAPITAL VIRTUAL</div>
+  <div class="big" id="balance">$10,000.00 USD</div>
+  <div class="muted">Simulador de operaciones · Sin dinero real</div>
+ </div>
+
+ <div class="grid">
+  <div class="card">
+   <div class="muted">GANANCIA / PÉRDIDA</div>
+   <div class="big green" id="profit">$0.00</div>
+  </div>
+  <div class="card">
+   <div class="muted">OPERACIONES</div>
+   <div class="big" id="count">0</div>
+  </div>
+ </div>
+
+ <h2>Mercados</h2>
+ <div class="card">
+  <div class="market">
+   <div>
+    <b>Bitcoin (BTC)</b>
+    <div class="muted">Criptomoneda</div>
+   </div>
+   <div id="btc">$67,000</div>
+  </div>
+  <div class="row">
+   <span>Ethereum (ETH)</span>
+   <span id="eth">$3,200</span>
+  </div>
+  <div class="row">
+   <span>Apple (AAPL)</span>
+   <span id="aapl">$225</span>
+  </div>
+  <div class="row">
+   <span>Nvidia (NVDA)</span>
+   <span id="nvda">$140</span>
+  </div>
+  <p class="muted">Precios ficticios de demostración, no cotizaciones reales.</p>
+ </div>
+
+ <h2>Gráfico de mercado</h2>
+ <div class="card">
+  <select id="asset" onchange="drawChart()">
+   <option>Bitcoin</option>
+   <option>Ethereum</option>
+   <option>Apple</option>
+   <option>Nvidia</option>
+  </select>
+  <canvas id="chart"></canvas>
+  <div class="muted">Gráfico sintético de demostración</div>
+ </div>
+
+ <h2>Motor de inteligencia artificial</h2>
+ <div class="card">
+  <div class="muted">ANÁLISIS EXPERIMENTAL</div>
+  <div class="big signal" id="signal">ANALIZANDO</div>
+  <p id="explanation" class="muted">
+   Evaluación de datos de demostración.
+  </p>
+  <button onclick="analyze()" style="width:100%">Analizar mercado</button>
+ </div>
+
+ <h2>Simulador de operaciones</h2>
+ <div class="card">
+  <label class="muted">Cantidad virtual en USD</label>
+  <input id="amount" type="number" value="100"
+   min="1" style="width:100%;padding:12px;margin:10px 0;background:#080e1b;color:white;border:1px solid #344b69;border-radius:8px">
+  <div class="actions">
+   <button class="active" onclick="trade('buy')">Comprar</button>
+   <button onclick="trade('sell')">Vender</button>
+  </div>
+  <p class="muted" id="message">Las operaciones son ficticias.</p>
+ </div>
+
+ <h2>Historial</h2>
+ <div class="card" id="history">
+  <p class="muted">Todavía no hay operaciones.</p>
+ </div>
+</main>
+
+<footer>
+ TRADYX AI TRADING · PROTOTIPO V1<br>
+ No ofrece asesoría financiera ni ejecuta operaciones reales.
+</footer>
+
+<script>
+let balance=10000;
+let invested=0;
+let operations=0;
+let history=[];
+let lastSignal="ESPERAR";
+
+function money(n){
+ return "$"+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function analyze(){
+ const r=Math.random();
+ if(r>.65) lastSignal="COMPRAR";
+ else if(r<.25) lastSignal="VENDER";
+ else lastSignal="ESPERAR";
+
+ document.getElementById("signal").textContent=lastSignal;
+ document.getElementById("explanation").textContent=
+ "Señal aleatoria de demostración. Todavía no existe un modelo predictivo entrenado.";
+}
+
+function trade(type){
+ const amount=Number(document.getElementById("amount").value);
+ if(!Number.isFinite(amount)||amount<=0){
+  document.getElementById("message").textContent="Introduce una cantidad válida.";
+  return;
+ }
+ if(type==="buy"){
+  if(amount>balance){
+   document.getElementById("message").textContent="Capital virtual insuficiente.";
+   return;
+  }
+  balance-=amount;
+  invested+=amount;
+ }else{
+  if(amount>invested){
+   document.getElementById("message").textContent="No tienes esa cantidad invertida.";
+   return;
+  }
+  balance+=amount;
+  invested-=amount;
+ }
+ operations++;
+ history.unshift({type,amount});
+ document.getElementById("balance").textContent=money(balance)+" USD";
+ document.getElementById("profit").textContent=money(balance-10000);
+ document.getElementById("count").textContent=operations;
+ document.getElementById("message").textContent=
+ "Operación virtual registrada correctamente.";
+ document.getElementById("history").innerHTML=history.slice(0,8).map(x=>
+ '<div class="row"><span>'+x.type.toUpperCase()+
+ '</span><span>'+money(x.amount)+'</span></div>'
+ ).join("");
+}
+
+const values={
+ btc:67000,eth:3200,aapl:225,nvda:140
+};
+function showPrices(){
+ for(const id in values){
+  document.getElementById(id).textContent=money(values[id]);
+ }
+}
+function drawChart(){
+ const c=document.getElementById("chart");
+ const ctx=c.getContext("2d");
+ c.width=c.clientWidth*devicePixelRatio;
+ c.height=190*devicePixelRatio;
+ ctx.scale(devicePixelRatio,devicePixelRatio);
+ ctx.clearRect(0,0,c.clientWidth,190);
+ ctx.strokeStyle="#263a55";
+ ctx.lineWidth=1;
+ for(let y=30;y<190;y+=40){
+  ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(c.clientWidth,y);ctx.stroke();
+ }
+ ctx.beginPath();
+ for(let i=0;i<60;i++){
+  const x=i*c.clientWidth/59;
+  const y=90+Math.sin(i*.32)*24+(Math.random()-.5)*25;
+  if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+ }
+ ctx.strokeStyle="#28c6ff";
+ ctx.lineWidth=2;
+ ctx.stroke();
+}
+showPrices();
+drawChart();
+analyze();
+</script>
+</body>
+</html>
