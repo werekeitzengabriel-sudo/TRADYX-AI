@@ -3,218 +3,651 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080e1b">
-<title>TRADYX | AI Trading</title>
+<title>TRADYX | AI Trading Intelligence</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080e1b;color:#edf3ff;font-family:Arial,sans-serif}
-header{padding:20px;border-bottom:1px solid #1d2a40;display:flex;justify-content:space-between;align-items:center}
+header{padding:18px;border-bottom:1px solid #24334b;display:flex;justify-content:space-between;align-items:center}
 .logo{font-size:25px;font-weight:900;letter-spacing:2px;color:#37c8ff}
-.status{font-size:11px;color:#43dba0}
-main{padding:16px;max-width:850px;margin:auto}
-h2{font-size:19px;margin:20px 0 12px}
-.card{background:#111c2e;border:1px solid #23334c;border-radius:14px;padding:16px;margin-bottom:13px}
+.status{font-size:10px;color:#43dba0;text-align:right}
+main{padding:15px;max-width:850px;margin:auto}
+h2{font-size:18px;margin:22px 0 12px}
+.card{background:#111c2e;border:1px solid #23334c;border-radius:14px;padding:15px;margin-bottom:12px}
 .muted{color:#8fa3bd;font-size:12px}
-.big{font-size:30px;font-weight:bold;margin:10px 0}
+.big{font-size:27px;font-weight:bold;margin:10px 0}
 .green{color:#42dca0}
 .red{color:#ff667c}
+.blue{color:#37c8ff}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.market{display:flex;justify-content:space-between;gap:8px;align-items:center}
-button,select{background:#1b2d47;color:white;border:1px solid #344b69;border-radius:9px;padding:11px;cursor:pointer}
-button.active{background:#087eb7;border-color:#22bafa}
-.actions{display:flex;gap:10px;margin-top:14px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #26364d;font-size:13px;gap:8px}
+button,select,input{background:#1b2d47;color:white;border:1px solid #344b69;border-radius:9px;padding:12px}
+button{cursor:pointer}
+button:disabled{opacity:.4}
+button.primary{background:#087eb7;border-color:#22bafa}
+button.secondary{background:#1b2d47}
+button.full{width:100%}
+input{width:100%;background:#080e1b;margin:9px 0}
+select{max-width:100%}
+canvas{width:100%;height:220px;display:block}
+.indicator{font-size:20px;font-weight:bold;margin-top:7px}
+.tag{font-size:10px;color:#37c8ff;background:#102e43;padding:5px 8px;border-radius:20px}
+.actions{display:flex;gap:10px;margin-top:12px}
 .actions button{flex:1}
-canvas{width:100%;height:190px}
-.row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #26364d;font-size:13px}
-footer{text-align:center;color:#7589a4;font-size:11px;padding:25px}
-.signal{font-weight:bold;color:#42dca0}
+#history .row{font-size:11px}
+.notice{padding:10px;background:#17253a;border-radius:9px;font-size:11px;color:#a8bad0;line-height:1.5}
+footer{text-align:center;padding:25px;color:#7488a3;font-size:11px}
+@media(max-width:380px){.big{font-size:23px}}
 </style>
 </head>
+
 <body>
 <header>
  <div class="logo">TRADYX</div>
- <div class="status">● SISTEMA DEMO ACTIVO</div>
+ <div>
+  <div class="status" id="connection">● CONECTANDO...</div>
+  <div class="muted" id="updated">Esperando datos</div>
+ </div>
 </header>
 
 <main>
- <h2>Panel de inteligencia financiera</h2>
 
+<h2>Inteligencia financiera</h2>
+
+<div class="card">
+ <div class="muted">PATRIMONIO VIRTUAL</div>
+ <div class="big" id="equity">$10,000.00</div>
+ <div class="muted">Capital inicial: $10,000 USDT</div>
+</div>
+
+<div class="grid">
  <div class="card">
-  <div class="muted">CAPITAL VIRTUAL</div>
-  <div class="big" id="balance">$10,000.00 USD</div>
-  <div class="muted">Simulador de operaciones · Sin dinero real</div>
+  <div class="muted">GANANCIA / PÉRDIDA TOTAL</div>
+  <div class="big green" id="profit">$0.00</div>
  </div>
+ <div class="card">
+  <div class="muted">OPERACIONES</div>
+  <div class="big" id="count">0</div>
+ </div>
+</div>
+
+<h2>Mercados en tiempo real</h2>
+
+<div class="card">
+ <div class="row">
+  <div>
+   <b>Bitcoin (BTC)</b>
+   <div class="muted">BTC / USDT</div>
+  </div>
+  <div style="text-align:right">
+   <b id="btcPrice">Cargando...</b>
+   <div class="muted" id="btcStatus">Conectando</div>
+  </div>
+ </div>
+
+ <div class="row">
+  <div>
+   <b>Ethereum (ETH)</b>
+   <div class="muted">ETH / USDT</div>
+  </div>
+  <div style="text-align:right">
+   <b id="ethPrice">Cargando...</b>
+   <div class="muted" id="ethStatus">Conectando</div>
+  </div>
+ </div>
+
+ <div class="row">
+  <div>
+   <b>Apple (AAPL)</b>
+   <div class="muted">Bolsa de valores</div>
+  </div>
+  <span class="tag">DATOS PENDIENTES</span>
+ </div>
+
+ <div class="row">
+  <div>
+   <b>Nvidia (NVDA)</b>
+   <div class="muted">Bolsa de valores</div>
+  </div>
+  <span class="tag">DATOS PENDIENTES</span>
+ </div>
+
+ <p class="muted">Las criptomonedas se consultan mediante Binance. Los precios bursátiles necesitan una fuente adicional. USDT es una moneda estable vinculada al dólar, pero no garantiza equivalencia exacta.</p>
+ <button class="full secondary" onclick="refreshAll()">Actualizar cotizaciones</button>
+</div>
+
+<h2>Análisis de mercado</h2>
+
+<div class="card">
+ <div class="muted">SELECCIONA UN ACTIVO</div>
+ <select id="asset" onchange="changeAsset()" style="width:100%;margin:10px 0">
+  <option value="BTC">Bitcoin (BTC)</option>
+  <option value="ETH">Ethereum (ETH)</option>
+ </select>
+
+ <div class="big blue" id="selectedPrice">Cargando...</div>
+ <div class="muted" id="chartStatus">Descargando velas de mercado...</div>
+ <canvas id="chart"></canvas>
 
  <div class="grid">
-  <div class="card">
-   <div class="muted">GANANCIA / PÉRDIDA</div>
-   <div class="big green" id="profit">$0.00</div>
+  <div>
+   <div class="muted">RSI (14)</div>
+   <div class="indicator" id="rsi">--</div>
   </div>
-  <div class="card">
-   <div class="muted">OPERACIONES</div>
-   <div class="big" id="count">0</div>
+  <div>
+   <div class="muted">MACD</div>
+   <div class="indicator" id="macd">--</div>
+  </div>
+  <div>
+   <div class="muted">MEDIA MÓVIL 20</div>
+   <div class="indicator" id="sma20">--</div>
+  </div>
+  <div>
+   <div class="muted">MEDIA MÓVIL 50</div>
+   <div class="indicator" id="sma50">--</div>
   </div>
  </div>
+</div>
 
- <h2>Mercados</h2>
- <div class="card">
-  <div class="market">
-   <div>
-    <b>Bitcoin (BTC)</b>
-    <div class="muted">Criptomoneda</div>
-   </div>
-   <div id="btc">$67,000</div>
-  </div>
-  <div class="row">
-   <span>Ethereum (ETH)</span>
-   <span id="eth">$3,200</span>
-  </div>
-  <div class="row">
-   <span>Apple (AAPL)</span>
-   <span id="aapl">$225</span>
-  </div>
-  <div class="row">
-   <span>Nvidia (NVDA)</span>
-   <span id="nvda">$140</span>
-  </div>
-  <p class="muted">Precios ficticios de demostración, no cotizaciones reales.</p>
- </div>
+<h2>Motor analítico TRADYX</h2>
 
- <h2>Gráfico de mercado</h2>
- <div class="card">
-  <select id="asset" onchange="drawChart()">
-   <option>Bitcoin</option>
-   <option>Ethereum</option>
-   <option>Apple</option>
-   <option>Nvidia</option>
-  </select>
-  <canvas id="chart"></canvas>
-  <div class="muted">Gráfico sintético de demostración</div>
+<div class="card">
+ <div class="muted">SEÑAL CALCULADA CON INDICADORES</div>
+ <div class="big blue" id="signal">ANALIZANDO</div>
+ <p class="muted" id="reason">Esperando datos de mercado.</p>
+ <div class="notice">
+  Esta versión utiliza reglas técnicas programadas. Todavía no es un modelo de IA entrenado. Las señales son experimentales y no constituyen recomendaciones financieras.
  </div>
+ <button class="full primary" onclick="refreshAll()" style="margin-top:12px">Analizar nuevamente</button>
+</div>
 
- <h2>Motor de inteligencia artificial</h2>
- <div class="card">
-  <div class="muted">ANÁLISIS EXPERIMENTAL</div>
-  <div class="big signal" id="signal">ANALIZANDO</div>
-  <p id="explanation" class="muted">
-   Evaluación de datos de demostración.
-  </p>
-  <button onclick="analyze()" style="width:100%">Analizar mercado</button>
- </div>
+<h2>Simulador de trading</h2>
 
- <h2>Simulador de operaciones</h2>
- <div class="card">
-  <label class="muted">Cantidad virtual en USD</label>
-  <input id="amount" type="number" value="100"
-   min="1" style="width:100%;padding:12px;margin:10px 0;background:#080e1b;color:white;border:1px solid #344b69;border-radius:8px">
-  <div class="actions">
-   <button class="active" onclick="trade('buy')">Comprar</button>
-   <button onclick="trade('sell')">Vender</button>
-  </div>
-  <p class="muted" id="message">Las operaciones son ficticias.</p>
- </div>
+<div class="card">
+ <div class="muted">ACTIVO SELECCIONADO</div>
+ <b id="tradeAsset">BTC / USDT</b>
 
- <h2>Historial</h2>
- <div class="card" id="history">
-  <p class="muted">Todavía no hay operaciones.</p>
+ <div class="muted" style="margin-top:14px">CANTIDAD EN USDT</div>
+ <input id="amount" type="number" value="100" min="1" step="1">
+
+ <div class="actions">
+  <button class="primary" onclick="trade('BUY')">Comprar</button>
+  <button class="secondary" onclick="trade('SELL')">Vender</button>
  </div>
+ <p class="muted" id="tradeMessage">Operaciones exclusivamente virtuales.</p>
+</div>
+
+<h2>Mis posiciones</h2>
+<div class="card" id="positions">
+ <p class="muted">Todavía no tienes posiciones.</p>
+</div>
+
+<h2>Historial de operaciones</h2>
+<div class="card" id="history">
+ <p class="muted">Sin operaciones registradas.</p>
+</div>
+
+<div class="notice">
+ TRADYX V2 es un prototipo experimental. No conecta cuentas bancarias, no custodia fondos y no ejecuta operaciones reales.
+</div>
+
 </main>
 
 <footer>
- TRADYX AI TRADING · PROTOTIPO V1<br>
- No ofrece asesoría financiera ni ejecuta operaciones reales.
+ TRADYX · AI TRADING INTELLIGENCE<br>
+ VERSIÓN 2.0 · PROTOTIPO EXPERIMENTAL
 </footer>
 
 <script>
-let balance=10000;
-let invested=0;
-let operations=0;
-let history=[];
-let lastSignal="ESPERAR";
+"use strict";
+
+const API="https://data-api.binance.vision/api/v3";
+const INITIAL=10000;
+
+let selected="BTC";
+let prices={BTC:null,ETH:null};
+let candles=[];
+let indicators=null;
+let refreshing=false;
+
+let portfolio={
+ cash:INITIAL,
+ positions:{BTC:{qty:0,cost:0},ETH:{qty:0,cost:0}},
+ history:[]
+};
+
+function loadPortfolio(){
+ try{
+  const saved=localStorage.getItem("tradyx_portfolio_v2");
+  if(saved){
+   const data=JSON.parse(saved);
+   if(Number.isFinite(data.cash)&&data.positions&&Array.isArray(data.history)){
+    portfolio=data;
+   }
+  }
+ }catch(e){
+  console.log("No se pudo cargar el historial",e);
+ }
+}
+
+function savePortfolio(){
+ try{
+  localStorage.setItem("tradyx_portfolio_v2",JSON.stringify(portfolio));
+ }catch(e){
+  console.log("No se pudo guardar el historial",e);
+ }
+}
 
 function money(n){
- return "$"+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+ return "$"+Number(n).toLocaleString("en-US",{
+  minimumFractionDigits:2,
+  maximumFractionDigits:2
+ });
+}
+
+function shortMoney(n){
+ return "$"+Number(n).toLocaleString("en-US",{
+  maximumFractionDigits:2
+ });
+}
+
+async function getJSON(url){
+ const response=await fetch(url,{cache:"no-store"});
+ if(!response.ok)throw new Error("Error HTTP "+response.status);
+ return await response.json();
+}
+
+async function fetchPrice(asset){
+ const data=await getJSON(API+"/ticker/price?symbol="+asset+"USDT");
+ const value=Number(data.price);
+ if(!Number.isFinite(value)||value<=0)throw new Error("Precio inválido");
+ prices[asset]=value;
+}
+
+async function fetchCandles(asset){
+ const data=await getJSON(
+  API+"/klines?symbol="+asset+"USDT&interval=1h&limit=100"
+ );
+
+ if(!Array.isArray(data)||data.length<50){
+  throw new Error("Datos históricos insuficientes");
+ }
+
+ candles=data.map(c=>({
+  time:Number(c[0]),
+  open:Number(c[1]),
+  high:Number(c[2]),
+  low:Number(c[3]),
+  close:Number(c[4]),
+  volume:Number(c[5])
+ }));
+
+ calculateIndicators();
+ drawChart();
+}
+
+function average(values){
+ return values.reduce((a,b)=>a+b,0)/values.length;
+}
+
+function sma(values,period){
+ if(values.length<period)return null;
+ return average(values.slice(-period));
+}
+
+function emaSeries(values,period){
+ if(values.length<period)return [];
+ const result=[];
+ const multiplier=2/(period+1);
+ let current=average(values.slice(0,period));
+ result.push(current);
+ for(let i=period;i<values.length;i++){
+  current=(values[i]-current)*multiplier+current;
+  result.push(current);
+ }
+ return result;
+}
+
+function calculateRSI(values,period=14){
+ if(values.length<=period)return null;
+ let gains=0,losses=0;
+ for(let i=values.length-period;i<values.length;i++){
+  const change=values[i]-values[i-1];
+  if(change>0)gains+=change;
+  else losses-=change;
+ }
+ const avgGain=gains/period;
+ const avgLoss=losses/period;
+ if(avgLoss===0)return 100;
+ const rs=avgGain/avgLoss;
+ return 100-(100/(1+rs));
+}
+
+function calculateMACD(values){
+ const fast=emaSeries(values,12);
+ const slow=emaSeries(values,26);
+ if(!fast.length||!slow.length)return null;
+
+ const offset=26-12;
+ const line=[];
+ for(let i=0;i<slow.length;i++){
+  line.push(fast[i+offset]-slow[i]);
+ }
+ const signal=emaSeries(line,9);
+ if(!signal.length)return null;
+
+ return {
+  line:line[line.length-1],
+  signal:signal[signal.length-1],
+  histogram:line[line.length-1]-signal[signal.length-1]
+ };
+}
+
+function calculateIndicators(){
+ const closes=candles.map(c=>c.close);
+ const rsiValue=calculateRSI(closes);
+ const macdValue=calculateMACD(closes);
+ const sma20Value=sma(closes,20);
+ const sma50Value=sma(closes,50);
+
+ indicators={
+  rsi:rsiValue,
+  macd:macdValue,
+  sma20:sma20Value,
+  sma50:sma50Value,
+  price:closes[closes.length-1]
+ };
+
+ renderIndicators();
+}
+
+function renderIndicators(){
+ if(!indicators)return;
+ const d=indicators;
+
+ document.getElementById("rsi").textContent=
+  d.rsi===null?"--":d.rsi.toFixed(2);
+
+ document.getElementById("macd").textContent=
+  d.macd?d.macd.histogram.toFixed(3):"--";
+
+ document.getElementById("sma20").textContent=
+  d.sma20?shortMoney(d.sma20):"--";
+
+ document.getElementById("sma50").textContent=
+  d.sma50?shortMoney(d.sma50):"--";
+
+ document.getElementById("selectedPrice").textContent=
+  money(prices[selected]||d.price);
+
+ document.getElementById("chartStatus").textContent=
+  "Velas de 1 hora · "+candles.length+" registros";
+ analyze();
 }
 
 function analyze(){
- const r=Math.random();
- if(r>.65) lastSignal="COMPRAR";
- else if(r<.25) lastSignal="VENDER";
- else lastSignal="ESPERAR";
-
- document.getElementById("signal").textContent=lastSignal;
- document.getElementById("explanation").textContent=
- "Señal aleatoria de demostración. Todavía no existe un modelo predictivo entrenado.";
-}
-
-function trade(type){
- const amount=Number(document.getElementById("amount").value);
- if(!Number.isFinite(amount)||amount<=0){
-  document.getElementById("message").textContent="Introduce una cantidad válida.";
+ if(!indicators||!indicators.macd){
+  document.getElementById("signal").textContent="ESPERANDO DATOS";
   return;
  }
- if(type==="buy"){
-  if(amount>balance){
-   document.getElementById("message").textContent="Capital virtual insuficiente.";
-   return;
-  }
-  balance-=amount;
-  invested+=amount;
+
+ const d=indicators;
+ let signal="ESPERAR";
+ let reason="Los indicadores no coinciden en una señal clara.";
+
+ if(d.rsi<35&&d.macd.histogram>0&&d.price>d.sma20){
+  signal="COMPRA SIMULADA";
+  reason="RSI bajo 35, MACD positivo y precio sobre SMA20.";
+ }else if(d.rsi>65&&d.macd.histogram<0&&d.price<d.sma20){
+  signal="VENTA SIMULADA";
+  reason="RSI alto 65, MACD negativo y precio bajo SMA20.";
  }else{
-  if(amount>invested){
-   document.getElementById("message").textContent="No tienes esa cantidad invertida.";
-   return;
-  }
-  balance+=amount;
-  invested-=amount;
+  reason="RSI: "+d.rsi.toFixed(2)+
+   ". MACD: "+d.macd.histogram.toFixed(4)+
+   ". No se cumplen todas las condiciones.";
  }
- operations++;
- history.unshift({type,amount});
- document.getElementById("balance").textContent=money(balance)+" USD";
- document.getElementById("profit").textContent=money(balance-10000);
- document.getElementById("count").textContent=operations;
- document.getElementById("message").textContent=
- "Operación virtual registrada correctamente.";
- document.getElementById("history").innerHTML=history.slice(0,8).map(x=>
- '<div class="row"><span>'+x.type.toUpperCase()+
- '</span><span>'+money(x.amount)+'</span></div>'
- ).join("");
+
+ document.getElementById("signal").textContent=signal;
+ document.getElementById("reason").textContent=reason;
 }
 
-const values={
- btc:67000,eth:3200,aapl:225,nvda:140
-};
-function showPrices(){
- for(const id in values){
-  document.getElementById(id).textContent=money(values[id]);
- }
-}
 function drawChart(){
- const c=document.getElementById("chart");
- const ctx=c.getContext("2d");
- c.width=c.clientWidth*devicePixelRatio;
- c.height=190*devicePixelRatio;
- ctx.scale(devicePixelRatio,devicePixelRatio);
- ctx.clearRect(0,0,c.clientWidth,190);
+ const canvas=document.getElementById("chart");
+ const ctx=canvas.getContext("2d");
+ const width=canvas.clientWidth;
+ const height=220;
+ const ratio=window.devicePixelRatio||1;
+
+ canvas.width=width*ratio;
+ canvas.height=height*ratio;
+ ctx.setTransform(ratio,0,0,ratio,0,0);
+ ctx.clearRect(0,0,width,height);
+
+ if(candles.length<2)return;
+
+ const data=candles.slice(-60);
+ const values=data.map(c=>c.close);
+ const min=Math.min(...values);
+ const max=Math.max(...values);
+ const range=max-min||1;
+ const pad=15;
+
  ctx.strokeStyle="#263a55";
  ctx.lineWidth=1;
- for(let y=30;y<190;y+=40){
-  ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(c.clientWidth,y);ctx.stroke();
+
+ for(let i=0;i<5;i++){
+  const y=pad+i*(height-2*pad)/4;
+  ctx.beginPath();
+  ctx.moveTo(0,y);
+  ctx.lineTo(width,y);
+  ctx.stroke();
  }
+
  ctx.beginPath();
- for(let i=0;i<60;i++){
-  const x=i*c.clientWidth/59;
-  const y=90+Math.sin(i*.32)*24+(Math.random()-.5)*25;
-  if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
- }
+ values.forEach((v,i)=>{
+  const x=i*(width-5)/(values.length-1);
+  const y=height-pad-((v-min)/range)*(height-2*pad);
+  if(i===0)ctx.moveTo(x,y);
+  else ctx.lineTo(x,y);
+ });
+
  ctx.strokeStyle="#28c6ff";
  ctx.lineWidth=2;
  ctx.stroke();
 }
-showPrices();
-drawChart();
-analyze();
+
+async function refreshAll(){
+ if(refreshing)return;
+ refreshing=true;
+ document.getElementById("connection").textContent="● ACTUALIZANDO...";
+
+ try{
+  await Promise.all([
+   fetchPrice("BTC"),
+   fetchPrice("ETH")
+  ]);
+
+  document.getElementById("btcPrice").textContent=money(prices.BTC);
+  document.getElementById("ethPrice").textContent=money(prices.ETH);
+  document.getElementById("btcStatus").textContent="● Mercado conectado";
+  document.getElementById("ethStatus").textContent="● Mercado conectado";
+
+  await fetchCandles(selected);
+
+  document.getElementById("connection").textContent="● CRIPTO CONECTADA";
+  document.getElementById("updated").textContent=
+   "Actualizado: "+new Date().toLocaleTimeString();
+
+  renderPortfolio();
+
+ }catch(error){
+  console.error(error);
+  document.getElementById("connection").textContent="● ERROR DE CONEXIÓN";
+  document.getElementById("chartStatus").textContent=
+   "No se pudieron descargar datos. Comprueba internet e inténtalo otra vez.";
+  document.getElementById("tradeMessage").textContent=
+   "No se puede operar en el simulador sin precios actuales.";
+ }finally{
+  refreshing=false;
+ }
+}
+
+async function changeAsset(){
+ selected=document.getElementById("asset").value;
+ document.getElementById("tradeAsset").textContent=selected+" / USDT";
+ document.getElementById("chartStatus").textContent="Descargando datos...";
+ await refreshAll();
+}
+
+function trade(side){
+ const amount=Number(document.getElementById("amount").value);
+ const price=prices[selected];
+
+ if(!Number.isFinite(amount)||amount<=0){
+  message("Introduce una cantidad válida.");
+  return;
+ }
+
+ if(!Number.isFinite(price)||price<=0){
+  message("Espera a que se conecten los precios reales.");
+  return;
+ }
+
+ const position=portfolio.positions[selected];
+ let qty=amount/price;
+ let realized=0;
+
+ if(side==="BUY"){
+  if(amount>portfolio.cash){
+   message("No tienes suficiente capital virtual.");
+   return;
+  }
+
+  const oldCost=position.qty*position.cost;
+  position.qty+=qty;
+  position.cost=(oldCost+amount)/position.qty;
+  portfolio.cash-=amount;
+
+ }else{
+  if(qty>position.qty){
+   message("No tienes suficiente cantidad de este activo.");
+   return;
+  }
+
+  realized=qty*(price-position.cost);
+  position.qty-=qty;
+  portfolio.cash+=amount;
+
+  if(position.qty<0.000000001){
+   position.qty=0;
+   position.cost=0;
+  }
+ }
+
+ portfolio.history.unshift({
+  side:side,
+  asset:selected,
+  qty:qty,
+  price:price,
+  amount:amount,
+  realized:realized,
+  date:new Date().toLocaleString()
+ });
+
+ portfolio.history=portfolio.history.slice(0,100);
+
+ savePortfolio();
+ renderPortfolio();
+
+ message(
+  side==="BUY"
+  ?"Compra virtual registrada."
+  :"Venta virtual registrada. Resultado realizado: "+money(realized)
+ );
+}
+
+function message(text){
+ document.getElementById("tradeMessage").textContent=text;
+}
+
+function renderPortfolio(){
+ let holdings=0;
+
+ for(const asset of ["BTC","ETH"]){
+  holdings+=portfolio.positions[asset].qty*(prices[asset]||0);
+ }
+
+ const equity=portfolio.cash+holdings;
+ const profit=equity-INITIAL;
+
+ document.getElementById("equity").textContent=money(equity);
+ document.getElementById("profit").textContent=money(profit);
+ document.getElementById("profit").className=
+  "big "+(profit>=0?"green":"red");
+ document.getElementById("count").textContent=
+  portfolio.history.length;
+
+ const box=document.getElementById("positions");
+ box.innerHTML="";
+
+ let hasPosition=false;
+
+ for(const asset of ["BTC","ETH"]){
+  const p=portfolio.positions[asset];
+  if(p.qty<=0)continue;
+  hasPosition=true;
+
+  const current=prices[asset]||0;
+  const pnl=(current-p.cost)*p.qty;
+  const row=document.createElement("div");
+  row.className="row";
+
+  const left=document.createElement("span");
+  left.textContent=asset+" · "+p.qty.toFixed(6)+" unidades";
+
+  const right=document.createElement("span");
+  right.textContent=money(pnl)+" P/L";
+
+  row.append(left,right);
+  box.appendChild(row);
+ }
+
+ if(!hasPosition){
+  box.innerHTML='<p class="muted">Todavía no tienes posiciones.</p>';
+ }
+
+ const historyBox=document.getElementById("history");
+ historyBox.innerHTML="";
+
+ if(!portfolio.history.length){
+  historyBox.innerHTML='<p class="muted">Sin operaciones registradas.</p>';
+ }else{
+  portfolio.history.slice(0,15).forEach(item=>{
+   const row=document.createElement("div");
+   row.className="row";
+
+   const left=document.createElement("span");
+   left.textContent=item.side+" "+item.asset;
+
+   const right=document.createElement("span");
+   right.textContent=money(item.amount);
+
+   row.append(left,right);
+   historyBox.appendChild(row);
+  });
+ }
+}
+
+loadPortfolio();
+renderPortfolio();
+refreshAll();
+
+setInterval(refreshAll,60000);
+
+window.addEventListener("resize",()=>{
+ if(candles.length)drawChart();
+});
 </script>
 </body>
 </html>
